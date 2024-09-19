@@ -4,8 +4,10 @@ import OutlineButton from "../UI/OutlineButton";
 import { colors } from "../../constants/colors";
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from "expo-location";
 import { getMapPreview } from "../../util/location";
+import { useNavigation } from "@react-navigation/native";
 
 function LocationPicker() {
+    const navigator = useNavigation();
     const [location, setLocation] = useState(null);
     const [locationPermissionInformation, requestPermition] = useForegroundPermissions();
     async function veryfyPermition() {
@@ -32,6 +34,7 @@ function LocationPicker() {
         console.log(location);
     }
     function pickOnMap() {
+        navigator.navigate("Map");
         console.log("Pin");
     }
 
