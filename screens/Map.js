@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { StyleSheet } from "react-native";
+import { useCallback, useLayoutEffect, useState } from "react";
+import { Alert, StyleSheet } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-function Map() {
+import Ionicons from "@expo/vector-icons/Ionicons";
+function Map({ navigation }) {
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const region ={
+    const region = {
         latitude: 37.78825,
         longitude: -122.4324,
         latitudeDelta: 0.0922,
@@ -13,10 +14,28 @@ function Map() {
         console.log(event.nativeEvent.coordinate);
         const lat = event.nativeEvent.coordinate.latitude;
         const lng = event.nativeEvent.coordinate.longitude;
-       setSelectedLocation({lat: lat, lng: lng});
+        setSelectedLocation({ lat: lat, lng: lng });
     }
+    const saveLocation = useCallback(() => {
+        if (!selectedLocation) {
+            Alert.alert("Error", "Please select a location first");
+            return
+        }
+        navigation.navigate('AddPlace', {
+            pickedLat: selectedLocation.lat,
+            pickedLong: selectedLocation.lng,
+        });
+    }, [selectedLocation, navigation]);
+useLayoutEffect(() => {
+   navigation.setOptions({
+    headerRight: ({tintColor}) => (
+     <Ionicons name="save" size={24} color={tintColor} onPress={saveLocation} />
+    ),
+   })
+},[navigation, saveLocation])  
+
     return <MapView style={styles.map} initialRegion={region} onPress={selectLocation}>
-       {selectedLocation && <Marker title="Picked Location" coordinate={{latitude:selectedLocation.lat, longitude: selectedLocation.lng}} />    }
+        {selectedLocation && <Marker title="Picked Location" coordinate={{ latitude: selectedLocation.lat, longitude: selectedLocation.lng }} />}
     </MapView>
 }
 export default Map;
