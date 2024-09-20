@@ -3,10 +3,10 @@ import { StyleSheet, View, Alert, Image, Text } from "react-native";
 import OutlineButton from "../UI/OutlineButton";
 import { colors } from "../../constants/colors";
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from "expo-location";
-import { getMapPreview } from "../../util/location";
+import { getAdress, getMapPreview } from "../../util/location";
 import { useNavigation, useRoute, useIsFocused } from "@react-navigation/native";
 
-function LocationPicker({onLocationSelected}) {
+function LocationPicker({ onLocationSelected }) {
     const navigator = useNavigation();
     const route = useRoute();
     const isFocused = useIsFocused();
@@ -14,16 +14,24 @@ function LocationPicker({onLocationSelected}) {
     const [locationPermissionInformation, requestPermition] = useForegroundPermissions();
     useEffect(() => {
         if (isFocused && route.params) {
-        
-            const mapPickerselected = {lat: route.params.pickedLat, log: route.params.pickedLong}
+
+            const mapPickerselected = { lat: route.params.pickedLat, log: route.params.pickedLong }
             setLocation(mapPickerselected);
         }
-     
+
     }, [route, isFocused]);
 
     useEffect(() => {
-        onLocationSelected(location)
-        
+        async function getLocation() {
+
+            if (location) {
+                const address = await getAdress(location.lat, location.log)
+                onLocationSelected({ ...location, address: address })
+
+            }
+        }
+        getLocation();
+
     }, [location, onLocationSelected]);
     async function veryfyPermition() {
         if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -46,7 +54,7 @@ function LocationPicker({onLocationSelected}) {
             lat: location.coords.latitude,
             log: location.coords.longitude,
         });
-       
+
         console.log(location);
     }
     function pickOnMap() {
