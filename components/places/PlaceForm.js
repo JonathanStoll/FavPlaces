@@ -4,7 +4,9 @@ import { colors } from "../../constants/colors";
 import ImagePicker from "./ImagePicker";
 import LocationPicker from "./LocationPicker";
 import OutlineButton from "../UI/OutlineButton";
-function PlaceForm() {
+import { Place } from "../../model/places";
+
+function PlaceForm({onCreatePlace}) {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [location, setLocation] = useState("");
@@ -18,10 +20,8 @@ function PlaceForm() {
     setLocation(location);
   }, []);
   function handleSubmit() {
-    console.log("Submitted");
-    console.log('title', title);
-    console.log('image', image);
-    console.log('location', location);
+    const place = new Place(title, image, location);
+    onCreatePlace(place);
   }
   return (
     <ScrollView style={styles.form}>
